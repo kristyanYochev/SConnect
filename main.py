@@ -1,12 +1,15 @@
+# *-* coding: utf-8 *-*
 import gc
+import json
 
-from flask import Flask, render_template, session, request, jsonify
+from flask import Flask, render_template, session, request, jsonify, redirect
 from dbconnect import connect
 from MySQLdb import escape_string as es
 from passlib.hash import sha256_crypt as sha256
 
 from dotmap import DotMap
 
+from functools import wraps
 
 c, dict_c, conn = connect()
 
@@ -15,6 +18,16 @@ app.secret_key = "uhisfadvhgkjlfdsljhgblkjhgibdafslkjhgbdsfvhkbljdsfvkjhbdfsvkjh
 
 def escape_string(string):
     return es(string).decode('utf-8')
+
+def login_req(f):
+    @wraps(f)
+    def wrap(*a, **kw):
+        if 'logged_in' in session:
+            return f(*a, **kw)
+        else:
+            return redirect('/login')
+    
+    return wrap
 
 @app.route('/')
 def index():
@@ -43,12 +56,12 @@ def login():
             return jsonify(error="Паролата не е вярна", code="3")
         
         session['logged_in'] = True
-        session['client'] = True
         session['id'] = fetched_info.id
         
         gc.collect()
         
-        return jsonify(code="1", url="/profile/")
+        # return json.dumps({"code": "1", "url": "/login"})
+        return jsonify(code = "1", url = "/")
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -73,7 +86,16 @@ def register():
 
         gc.collect()
 
+        # return json.dumps({"code": "1", "url": "/login"})
         return jsonify(code="1", url="/login")
+
+@app.route('/home/')
+def home():
+    # TODO: Add interest selection algorithm
+    dict_c.execute('select interests from users where id = {};'.format(session['id']))
+    res = DotMap(dict_c.fetchone())
+    if res.interests == None:
+        return render_template('home.html', interests=[])
 
 if __name__ == "__main__":
     app.run(debug=True, port=9000)

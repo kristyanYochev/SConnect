@@ -1,8 +1,10 @@
-function submit() {
-    $.post(
-        $('form').attr('action'), 
-        $('form').serialize(), 
-        function(data) {
+function submit(e = null) {
+    if (e) {e.preventDefault()}
+    $.ajax({
+        url: $('form').attr('action'), 
+        data: $('form').serialize(),
+        type: "POST",
+        success: function(data) {
             console.log(data)
             if (data.code == '1') {
                 window.location.href = data.url
@@ -10,10 +12,10 @@ function submit() {
                 var snackbar = document.querySelector('#error-message')
                 snackbar.MaterialSnackbar.showSnackbar({message: data.error})
             }
-        }
-    )
-
-    if (grecaptcha) {
-        grecaptcha.reset()
-    }
+        },
+    })
 }
+
+$(document).ready(function() {
+    $('form').on('submit', submit)
+})
