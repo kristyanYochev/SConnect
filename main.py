@@ -48,7 +48,7 @@ def login():
         
         gc.collect()
         
-        return jsonify(code="1", url="/client/")
+        return jsonify(code="1", url="/profile/")
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
