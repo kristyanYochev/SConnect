@@ -137,7 +137,10 @@ def settings():
         interests = dict_l_to_dotmap(dict_c.fetchall())
 
         c.execute('select interests from users where id = {};'.format(session['id']))
-        user_interests = json.loads(c.fetchone()[0])
+        try:
+            user_interests = json.loads(c.fetchone()[0])
+        except Exception:
+            user_interests = []
         return render_template('settings.html', interests=interests, user_interests=user_interests, str=str)
     else:
         if 'profile_pic' in request.files:
@@ -170,6 +173,70 @@ def add_interest():
 
     return redirect('/home')
 
+@app.route('/find-friends')
+def find_friends():
+    c.execute('select interests from users where id = {};'.format(session['id']))
+    interests = json.loads(c.fetchone()[0])
+    interest_objs = []
+
+    for interest in interests:
+        dict_c.execute('select * from interests where id = {}'.format(interest))
+        res = DotMap(interest = DotMap(dict_c.fetchone()))
+        
+        dict_c.execute('select f_name, l_name, id from users where cast(interests as char) like "%{0}%" and id != {1};'.format(res.interest.id, session['id']))
+        res.users = dict_l_to_dotmap(dict_c.fetchall())
+
+        print(res)
+        interest_objs.append(res)
+    
+    return render_template('find_friends.html', interest_objs=interest_objs)
+
+@app.route('/send-friend-request/<int:uid>')
+def friend_req(uid):
+    x = c.execute('select * from friendships where (person_1 = {0} or person_1 = {1}) and (person_2 = {0} or person_2 = {1});'.format(session['id'], uid))
+    if int(x):
+        return redirect('/find-friends')
+
+    c.execute('insert into friendships (person_1, person_2, status) values ({0}, {1}, 0)'.format(session['id'], uid))
+    conn.commit()
+
+    return redirect('/home')
+
+@app.route('/notifications')
+def notify():
+    c.execute('select person_1 from friendships where person_2 = {} and status = 0;'.format(session['id']))
+    notif_ids = [el[0] for el in c.fetchall()]
+    if len(notif_ids) == 0:
+        return render_template('notifications.html', notifications=[])
+    
+    notifications = []
+
+    for notif in notif_ids:
+        dict_c.execute('select f_name, l_name, id from users where id = {};'.format(notif))
+        res = DotMap(dict_c.fetchone())
+        notifications.append(res)
+
+    return render_template('notifications.html', notifications=notifications)
+
+@app.route('/accept/<int:uid>')
+def accept(uid):
+    c.execute('update friendships set status = 1 where person_1 = {0} and person_2 = {1}'.format(uid, session['id']))
+    conn.commit()
+    return redirect('/home')
+
+@app.route('/friends')
+def friends():
+    c.execute('select if(person_1 = {0}, person_2, person_1) as person from friendships where (person_1 = {0} or person_2 = {0}) and status = 1;'.format(session['id']))
+    friend_ids = [el[0] for el in c.fetchall()]
+
+    friends = []
+
+    for fid in friend_ids:
+        dict_c.execute('select f_name, l_name, id from users where id = {};'.format(fid))
+        res = DotMap(dict_c.fetchone())
+        friends.append(res)
+
+    return render_template('friends.html', friends=friends)
 
 if __name__ == "__main__":
     app.run(debug=True, port=9000)
