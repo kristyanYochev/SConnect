@@ -1,6 +1,7 @@
 # *-* coding: utf-8 *-*
 import gc
 import json
+import os
 
 from flask import Flask, render_template, session, request, jsonify, redirect
 from dbconnect import connect
@@ -15,6 +16,8 @@ c, dict_c, conn = connect()
 
 app = Flask(__name__)
 app.secret_key = "uhisfadvhgkjlfdsljhgblkjhgibdafslkjhgbdsfvhkbljdsfvkjhbdfsvkjhbdfscjhknl"
+
+UPLOAD_FOLDER = "~/Desktop/proj/SConnect/static/img/profile_pics"
 
 def escape_string(string):
     return es(string).decode('utf-8')
@@ -61,7 +64,7 @@ def login():
         gc.collect()
         
         # return json.dumps({"code": "1", "url": "/login"})
-        return jsonify(code = "1", url = "/")
+        return jsonify(code = "1", url = "/home/")
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -89,13 +92,35 @@ def register():
         # return json.dumps({"code": "1", "url": "/login"})
         return jsonify(code="1", url="/login")
 
-@app.route('/home/')
+@app.route('/home')
 def home():
     # TODO: Add interest selection algorithm
-    dict_c.execute('select interests from users where id = {};'.format(session['id']))
-    res = DotMap(dict_c.fetchone())
-    if res.interests == None:
-        return render_template('home.html', interests=[])
+    # dict_c.execute('select interests from users where id = {};'.format(session['id']))
+    # res = DotMap(dict_c.fetchone())
+    # if res.interests == None:
+    #     return render_template('home.html', interests=[])
+    
+    return render_template('home.html')
+
+@app.route('/settings', methods=["GET", "POST"])
+def settings():
+    if request.method == "GET":
+        return render_template('settings.html')
+    else:
+        interests = dict(request.form)
+
+        if 'profile_pic' in request.files:
+            f = request.files['profile_pic']
+            if f.filename != "":
+                #if the file exists, delete it and replace it with a new one
+                if '{}.png'.format(session['id']) in os.listdir(UPLOAD_FOLDER):
+                    os.remove("{0}/{1}.png".format(UPLOAD_FOLDER, session['id']))
+                f.save("{0}/{1}.png".format(UPLOAD_FOLDER, session['id']))
+        
+        c.execute('update users set interests = {0} where id = {1};'.format(json.dumps(interests), session['id']))
+        conn.commit()
+
+        return redirect('/home')
 
 if __name__ == "__main__":
     app.run(debug=True, port=9000)
