@@ -1,0 +1,1 @@
+Create the friendships table on the prod laptop (person_1 int, person_2 int, status int, chat_room int auto_incr prim key)
