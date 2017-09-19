@@ -117,6 +117,7 @@ def register():
         return jsonify(code="1", url="/login")
 
 @app.route('/home')
+@no_cache
 def home():
     # TODO: Add interest selection algorithm
     # dict_c.execute('select interests from users where id = {};'.format(session['id']))
@@ -168,6 +169,7 @@ def add_interest():
     conn.commit()
 
     return redirect('/home')
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=9000)
