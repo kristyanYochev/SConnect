@@ -129,7 +129,7 @@ def home():
         dict_c.execute('select f_name, l_name, id from users where id = {};'.format(fid))
         res = DotMap(dict_c.fetchone())
         friends.append(res)
-    
+
     dict_c.execute('select * from interests;')
     interests = dict_l_to_dotmap(dict_c.fetchall())
 
@@ -138,7 +138,7 @@ def home():
         user_interests = json.loads(c.fetchone()[0])
     except Exception:
         user_interests = []
-    
+
     return render_template('home1.html', friends=friends, interests=interests, user_interests=user_interests, str=str)
 
 @app.route('/settings', methods=["GET", "POST"])
@@ -251,4 +251,4 @@ def friends():
     return render_template('friends.html', friends=friends)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=9000)
+    app.run(debug=True, port=9000, host="0.0.0.0")
