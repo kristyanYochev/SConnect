@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 
 from flask import Flask, render_template, session, request, jsonify, redirect, make_response
+# from flask_socketio import SocketIO, send
 from dbconnect import connect
 from MySQLdb import escape_string as es
 from passlib.hash import sha256_crypt as sha256
@@ -251,4 +252,4 @@ def friends():
     return render_template('friends.html', friends=friends)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=9000)
+    app.run(debug=True, port=9000, host="0.0.0.0")
