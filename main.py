@@ -120,8 +120,26 @@ def register():
 @app.route('/home')
 @no_cache
 def home():
+    c.execute('select if(person_1 = {0}, person_2, person_1) as person from friendships where (person_1 = {0} or person_2 = {0}) and status = 1;'.format(session['id']))
+    friend_ids = [el[0] for el in c.fetchall()]
 
-    return render_template('home1.html')
+    friends = []
+
+    for fid in friend_ids:
+        dict_c.execute('select f_name, l_name, id from users where id = {};'.format(fid))
+        res = DotMap(dict_c.fetchone())
+        friends.append(res)
+    
+    dict_c.execute('select * from interests;')
+    interests = dict_l_to_dotmap(dict_c.fetchall())
+
+    c.execute('select interests from users where id = {};'.format(session['id']))
+    try:
+        user_interests = json.loads(c.fetchone()[0])
+    except Exception:
+        user_interests = []
+    
+    return render_template('home1.html', friends=friends, interests=interests, user_interests=user_interests, str=str)
 
 @app.route('/settings', methods=["GET", "POST"])
 @no_cache
