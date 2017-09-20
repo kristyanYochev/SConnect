@@ -29,6 +29,19 @@
                 </nav>
             </div>
             <main class="mdl-layout__content">
+                <ul class="mdl-list">
+                    {% for friend in friends %}
+                        <li class="mdl-list__item">
+                            <span class="mdl-list__item-primary-content">
+                                <img width=75 src="/static/img/profile_pics/{{ friend.id }}.png">
+                                <h5 class="mdl-list__item-secondary-action">{{ friend.f_name }} {{ friend.l_name }}</h5>
+                            </span>
+                            <span class="mdl-list__item-secondary-content">
+                                <a href="/chat/{{ friend.id }}" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Чат</a>
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
             </main>
         </div>
     </body>

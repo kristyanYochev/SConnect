@@ -3,24 +3,33 @@ import gc
 import json
 import os
 
-from flask import Flask, render_template, session, request, jsonify, redirect
+from datetime import datetime
+
+from flask import Flask, render_template, session, request, jsonify, redirect, make_response
 from dbconnect import connect
 from MySQLdb import escape_string as es
 from passlib.hash import sha256_crypt as sha256
 
 from dotmap import DotMap
 
-from functools import wraps
+from functools import wraps, update_wrapper
+from shutil import copyfile
 
 c, dict_c, conn = connect()
 
 app = Flask(__name__)
 app.secret_key = "uhisfadvhgkjlfdsljhgblkjhgibdafslkjhgbdsfvhkbljdsfvkjhbdfsvkjhbdfscjhknl"
 
-UPLOAD_FOLDER = "~/Desktop/proj/SConnect/static/img/profile_pics"
+UPLOAD_FOLDER = "{}/static/img/profile_pics".format(os.path.dirname(os.path.realpath(__file__))) # "~/Desktop/proj/SConnect/static/img/profile_pics"
 
 def escape_string(string):
     return es(string).decode('utf-8')
+
+def dict_l_to_dotmap(l):
+    res = []
+    for i in l:
+        res.append(DotMap(i))
+    return res
 
 def login_req(f):
     @wraps(f)
@@ -31,6 +40,18 @@ def login_req(f):
             return redirect('/login')
     
     return wrap
+
+def no_cache(f):
+    @wraps(f)
+    def wrap(*a, **kw):
+        response = make_response(f(*a, **kw))
+        response.headers["Last-Modified"] = datetime.now()
+        response.headers['Cache-Control'] = "no-cache, no-store, must-revalidate, post-check=0, pre-check=0, max-age=0"
+        response.headers['Pragma'] = "no-cache"
+        response.headers["Expires"] = "-1"
+
+        return response
+    return update_wrapper(wrap, f)
 
 @app.route('/')
 def index():
@@ -63,8 +84,7 @@ def login():
         
         gc.collect()
         
-        # return json.dumps({"code": "1", "url": "/login"})
-        return jsonify(code = "1", url = "/home/")
+        return jsonify(code = "1", url = "/home")
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -89,10 +109,15 @@ def register():
 
         gc.collect()
 
-        # return json.dumps({"code": "1", "url": "/login"})
+        dict_c.execute('select id from users where email = "{}";'.format(email))
+        id = dict_c.fetchone()['id']
+
+        copyfile('{}/default.png'.format(UPLOAD_FOLDER), '{0}/{1}.png'.format(UPLOAD_FOLDER, id))
+
         return jsonify(code="1", url="/login")
 
 @app.route('/home')
+@no_cache
 def home():
     # TODO: Add interest selection algorithm
     # dict_c.execute('select interests from users where id = {};'.format(session['id']))
@@ -100,15 +125,24 @@ def home():
     # if res.interests == None:
     #     return render_template('home.html', interests=[])
     
-    return render_template('home.html')
+    profile_pic = "/static/img/profile_pics/{}.png".format(session['id'])
+
+    return render_template('home.html', profile_pic=profile_pic)
 
 @app.route('/settings', methods=["GET", "POST"])
+@no_cache
 def settings():
     if request.method == "GET":
-        return render_template('settings.html')
-    else:
-        interests = dict(request.form)
+        dict_c.execute('select * from interests;')
+        interests = dict_l_to_dotmap(dict_c.fetchall())
 
+        c.execute('select interests from users where id = {};'.format(session['id']))
+        try:
+            user_interests = json.loads(c.fetchone()[0])
+        except Exception:
+            user_interests = []
+        return render_template('settings.html', interests=interests, user_interests=user_interests, str=str)
+    else:
         if 'profile_pic' in request.files:
             f = request.files['profile_pic']
             if f.filename != "":
@@ -116,11 +150,93 @@ def settings():
                 if '{}.png'.format(session['id']) in os.listdir(UPLOAD_FOLDER):
                     os.remove("{0}/{1}.png".format(UPLOAD_FOLDER, session['id']))
                 f.save("{0}/{1}.png".format(UPLOAD_FOLDER, session['id']))
+                print("file save")
         
-        c.execute('update users set interests = {0} where id = {1};'.format(json.dumps(interests), session['id']))
+        interests = list(dict(request.form).keys())
+        print(interests)
+        
+        c.execute('update users set interests = "{0}" where id = {1};'.format(escape_string(json.dumps(interests)), session['id']))
         conn.commit()
 
         return redirect('/home')
+
+@app.route('/add-interest', methods=["POST"])
+def add_interest():
+    name = escape_string(request.form['name'])
+
+    x = c.execute('select * from interests where name = "{}";'.format(name))
+    if int(x):
+        return redirect('/settings')
+
+    c.execute('insert into interests (name) values ("{}");'.format(name))
+    conn.commit()
+
+    return redirect('/home')
+
+@app.route('/find-friends')
+def find_friends():
+    c.execute('select interests from users where id = {};'.format(session['id']))
+    interests = json.loads(c.fetchone()[0])
+    interest_objs = []
+
+    for interest in interests:
+        dict_c.execute('select * from interests where id = {}'.format(interest))
+        res = DotMap(interest = DotMap(dict_c.fetchone()))
+        
+        dict_c.execute('select f_name, l_name, id from users where cast(interests as char) like "%{0}%" and id != {1};'.format(res.interest.id, session['id']))
+        res.users = dict_l_to_dotmap(dict_c.fetchall())
+
+        print(res)
+        interest_objs.append(res)
+    
+    return render_template('find_friends.html', interest_objs=interest_objs)
+
+@app.route('/send-friend-request/<int:uid>')
+def friend_req(uid):
+    x = c.execute('select * from friendships where (person_1 = {0} or person_1 = {1}) and (person_2 = {0} or person_2 = {1});'.format(session['id'], uid))
+    if int(x):
+        return redirect('/find-friends')
+
+    c.execute('insert into friendships (person_1, person_2, status) values ({0}, {1}, 0)'.format(session['id'], uid))
+    conn.commit()
+
+    return redirect('/home')
+
+@app.route('/notifications')
+def notify():
+    c.execute('select person_1 from friendships where person_2 = {} and status = 0;'.format(session['id']))
+    notif_ids = [el[0] for el in c.fetchall()]
+    if len(notif_ids) == 0:
+        return render_template('notifications.html', notifications=[])
+    
+    notifications = []
+
+    for notif in notif_ids:
+        dict_c.execute('select f_name, l_name, id from users where id = {};'.format(notif))
+        res = DotMap(dict_c.fetchone())
+        notifications.append(res)
+
+    return render_template('notifications.html', notifications=notifications)
+
+@app.route('/accept/<int:uid>')
+def accept(uid):
+    c.execute('update friendships set status = 1 where person_1 = {0} and person_2 = {1}'.format(uid, session['id']))
+    conn.commit()
+    return redirect('/home')
+
+@app.route('/friends')
+def friends():
+    c.execute('select if(person_1 = {0}, person_2, person_1) as person from friendships where (person_1 = {0} or person_2 = {0}) and status = 1;'.format(session['id']))
+    friend_ids = [el[0] for el in c.fetchall()]
+
+    friends = []
+
+    for fid in friend_ids:
+        dict_c.execute('select f_name, l_name, id from users where id = {};'.format(fid))
+        res = DotMap(dict_c.fetchone())
+        friends.append(res)
+
+    return render_template('friends.html', friends=friends)
 
 if __name__ == "__main__":
     app.run(debug=True, port=9000)

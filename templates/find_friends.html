@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>School Connect</title>
+        
+        <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue-teal.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://cdn.rawgit.com/CreativeIT/getmdl-select/master/getmdl-select.min.css">
+
+        <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+        <script defer src="https://cdn.rawgit.com/CreativeIT/getmdl-select/master/getmdl-select.min.js"></script>
+    </head>
+    <body>
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+            <header class="mdl-layout__header">
+                <div class="mdl-layout__header-row">
+                    <span class="mdl-layout-title">School Connect</span>
+                    <div class="mdl-layout-spacer"></div>
+                    <nav class="mdl-navigation mdl-layout--large-screen-only">
+                        <a class="mdl-navigation__link" href="">Link</a>
+                    </nav>
+                </div>
+                <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+                    <a href="#sect-{{ interest_objs[0].interest.id }}" class="mdl-layout__tab is-active">{{ interest_objs[0].interest.name }}</a>
+                    {% for interest in interest_objs[1:] %}
+                        <a href="#sect-{{ interest.interest.id }}" class="mdl-layout__tab">{{ interest.interest.name }}</a>                
+                    {% endfor %}
+                </div>
+            </header>
+            <main class="mdl-layout__content">
+                <section class="mdl-layout__tab-panel is-active" id="sect-{{ interest_objs[0].interest.id }}">
+                    <ul class="mdl-list">
+                        {% for user in interest_objs[0].users %}
+                            <li class="mdl-list__item">
+                                <span class="mdl-list__item-primary-content">
+                                    <img width="75" style="border-radius: 100%;" src="/static/img/profile_pics/{{ user.id }}.png">
+                                    <h5 class="mdl-list__item-secondary-action">{{ user.f_name }} {{ user.l_name }}</h5>
+                                </span>
+                                <span class="mdl-list__item-secondary-content">
+                                    <a href="/send-friend-request/{{ user.id }}" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Добави приятел</a>
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+                {% for interest in interest_objs[1:] %}
+                    <section class="mdl-layout__tab-panel {% if interest_objs.index(interest) == 0 %} is-active {% endif %}" id="sect-{{ interest.interest.id }}">
+                        <ul class="mdl-list">
+                            {% for user in interest.users %}
+                                <li class="mdl-list__item">
+                                    <span class="mdl-list__item-primary-content">
+                                        <img width=75 src="/static/img/profile_pics/{{ user.id }}.png">
+                                        <h5 class="mdl-list__item-secondary-action">{{ user.f_name }} {{ user.l_name }}</h5>
+                                    </span>
+                                    <span class="mdl-list__item-secondary-content">
+                                        <a href="/send-friend-request/{{ user.id }}" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Добави приятел</a>
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                {% endfor %}
+            </main>
+        </div>
+    </body>
+</html>

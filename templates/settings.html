@@ -10,8 +10,8 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
         <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="/static/js/form_submitter.js"></script>
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="/static/js/form_submitter.js"></script> -->
     </head>
     <body>
         <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
@@ -31,39 +31,41 @@
               </nav>
             </div>
             <main class="mdl-layout__content">
-                <div class="mdl-card mdl-shadow--8dp">
-                    <div class="mdl-card__title">
-                        <h2 class="mdl-card__title-text">Settings</h2>
+                <form action="/settings" method="post" enctype="multipart/form-data">
+                    <div class="mdl-card mdl-shadow--8dp">
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">Settings</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            {% for interest in interests %}
+                                <label for="{{ interest.id }}" class="mdl-checkbox mdl-js-checkbox">
+                                    <input type="checkbox" id="{{ interest.id }}" name="{{ interest.id }}" class="mdl-checkbox__input" {% if str(interest.id) in user_interests %} checked {% endif %}>
+                                    <span class="mdl-checkbox__label">{{ interest.name }}</span>
+                                </label>
+                            {% endfor %}
+                            <input type="file" accept="image/png image/jpg image/jpeg image/bmp" name="profile_pic">
+                        </div>
+                        <div class="mdl-card__actions">
+                            <input type="submit" value="Запази промените" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                        </div>
                     </div>
-                    <div class="mdl-card__supporting-text">
-                        <form action="/setiings" method="post">
-                            <label for="programming" class="mdl-checkbox mdl-js-checkbox">
-                                <input type="checkbox" id="programming" name="programming" class="mdl-checkbox__input">
-                                <span class="mdl-checkbox__label">Програмиране</span>
-                            </label>
-                            <label for="programming" class="mdl-checkbox mdl-js-checkbox">
-                                <input type="checkbox" id="tech" name="tech" class="mdl-checkbox__input">
-                                <span class="mdl-checkbox__label">Програмиране</span>
-                            </label>
-                            <label for="programming" class="mdl-checkbox mdl-js-checkbox">
-                                <input type="checkbox" id="robots" name="robots" class="mdl-checkbox__input">
-                                <span class="mdl-checkbox__label">Програмиране</span>
-                            </label>
-                            <label for="programming" class="mdl-checkbox mdl-js-checkbox">
-                                <input type="checkbox" id="sport" name="sport" class="mdl-checkbox__input">
-                                <span class="mdl-checkbox__label">Програмиране</span>
-                            </label>
-                            <label for="programming" class="mdl-checkbox mdl-js-checkbox">
-                                <input type="checkbox" id="art" name="art" class="mdl-checkbox__input">
-                                <span class="mdl-checkbox__label">Програмиране</span>
-                            </label>
-                            <label for="programming" class="mdl-checkbox mdl-js-checkbox">
-                                <input type="checkbox" id="movies" name="movies" class="mdl-checkbox__input">
-                                <span class="mdl-checkbox__label">Програмиране</span>
-                            </label>
-                        </form>
+                </form>
+                <form action='/add-interest' method="post">
+                    <div class="mdl-card mdl-shadow--8dp">
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">Добави интерес</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input class="mdl-textfield__input" type="text" id="name" name="name">
+                                <label class="mdl-textfield__label" for="name">Име на интереса</label>
+                            </div>
+                        </div>
+                        <div class="mdl-card__actions">
+                            <input type="submit" value="Добави интерес" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">                                
+                        </div>
                     </div>
-                </div>
+                </form>
             </main>
         </div>
     </body>
