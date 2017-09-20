@@ -56,12 +56,14 @@
                             </div>
                             <div class="mdl-card__supporting-text mdl-card--border">
                                 <ul id="messages">
-
+                                  {% for message in messages %}
+                                    <li>{{ message.sender }}: {{ message.msg }}</li>
+                                  {% endfor %}
                                 </ul>
                             </div>
                             <div class="mdl-card__supporting-text">
                                 <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                        <input class="mdl-textfield__input" id="myMessagel">
+                                        <input class="mdl-textfield__input" id="myMessage">
                                         <label class="mdl-textfield__label" for="myMessage"></label>
                                 </div>
                                 <button id="send">Прати</button>
@@ -69,7 +71,7 @@
                         </div>
                     </div>
                     <div class="mdl-cell mdl-cell--4-col"></div>
-                </div>             
+                </div>
             </main>
         </div>
     </body>
