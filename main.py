@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 
 from flask import Flask, render_template, session, request, jsonify, redirect, make_response
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, join_room, leave_room
 from dbconnect import connect
 from MySQLdb import escape_string as es
 from passlib.hash import sha256_crypt as sha256
@@ -72,7 +72,7 @@ def login():
         # if not checkRecaptcha(captcha_response, SECRET_KEY):
         #     return jsonify(error="Google recaptcha смяте, че сте робот.", code="4")
 
-        x = dict_c.execute('select id, passwd from users where email = "%s";' % email)
+        x = dict_c.execute('select id, f_name, school, passwd from users where email = "%s";' % email)
         real_passwd = ""
         if not int(x):
             return jsonify(error="E-mail не е регистриран", code="2")
@@ -83,6 +83,8 @@ def login():
             return jsonify(error="Паролата не е вярна", code="3")
 
         session['logged_in'] = True
+        session['school'] = fetched_info.school
+        session['name'] = fetched_info.f_name
         session['id'] = fetched_info.id
 
         gc.collect()
@@ -199,7 +201,7 @@ def find_friends():
         dict_c.execute('select * from interests where id = {}'.format(interest))
         res = DotMap(interest = DotMap(dict_c.fetchone()))
 
-        dict_c.execute('select f_name, l_name, id from users where cast(interests as char) like "%{0}%" and id != {1};'.format(res.interest.id, session['id']))
+        dict_c.execute('select f_name, l_name, id from users where cast(interests as char) like "%{0}%" and id != {1} and school = "{2}";'.format(res.interest.id, session['id'], session['school']))
         res.users = dict_l_to_dotmap(dict_c.fetchall())
 
         print(res)
@@ -236,7 +238,11 @@ def notify():
 
 @app.route('/accept/<int:uid>')
 def accept(uid):
-    c.execute('update friendships set status = 1 where person_1 = {0} and person_2 = {1}'.format(uid, session['id']))
+    c.execute('update friendships set status = 1 where person_1 = {0} and person_2 = {1};'.format(uid, session['id']))
+    conn.commit()
+    c.execute('select chat_room from friendships where person_1 = {0} and person_2 = {1};'.format(uid, session['id']))
+    chat_room = c.fetchone()[0]
+    c.execute('create table chat_{} (msg varchar(1000), sender int, date_sent datetime);'.format(chat_room))
     conn.commit()
     return redirect('/home')
 
@@ -264,11 +270,15 @@ def logout():
 def chat(uid):
     c.execute('select chat_room from friendships where (person_1 = {0} or person_1 = {1}) and (person_2 = {0} or person_2 = {1});'.format(uid, session['id']))
     session['chat_room'] = c.fetchone()[0]
-    return render_template('chat.html')
+    dict_c.execute('select * from chat_{} order by date_sent asc;'.format(session['chat_room']))
+    messages = dict_l_to_dotmap(dict_c.fetchall())
+    return render_template('chat.html', messages=messages)
 
 @io.on('message')
 def message(msg):
-    print(msg)
+    ret = "{0}: {1}".format(session['name'], msg)
+    join_room(session['chat_room'])
+    send(ret, room=session['chat_room'], broadcast=True)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=9000, host="0.0.0.0")
+    io.run(app, debug=True, port=9000, host="0.0.0.0")
