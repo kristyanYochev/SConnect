@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
  
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/static/js/form_submitter.js"></script>
 
     <style>
       .r{ width: 100%; }
@@ -19,12 +21,12 @@
     <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
         <!-- Title -->
-            <span class="mdl-layout-title">Title</span>
+            <span class="mdl-layout-title">SConnect</span>
         </div>
         <!-- Tabs -->
         <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
-            <a href="#scroll-tab-1" class="mdl-layout__tab is-active">login</a>
-            <a href="#scroll-tab-2" class="mdl-layout__tab">register</a>
+            <a href="#scroll-tab-1" class="mdl-layout__tab is-active">Влез</a>
+            <a href="#scroll-tab-2" class="mdl-layout__tab">Регистрация</a>
         </div>
     </header>
     <!-- <div class="mdl-layout__drawer">
@@ -40,17 +42,17 @@
                         <form action="/login" method="post">
                             <div class="r mdl-card mdl-shadow--2dp">
                                 <div class="mdl-card__title">
-                                    <h2 class="mdl-card__title-text">Login</h2>
+                                    <h2 class="mdl-card__title-text">Влез в профила си</h2>
                                 </div>
                                 <div class="mdl-card__supporting-text">
                                     <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                         <input class="mdl-textfield__input" type="email" id="email" name="email">
-                                        <label class="mdl-textfield__label" for="email">Email</label>
-                                        <label class="mdl-textfield__error" for="sample3">Email-ът не е валиден</label>
+                                        <label class="mdl-textfield__label" for="email">Имейл</label>
+                                        <label class="mdl-textfield__error" for="sample3">Имейл-ът не е валиден</label>
                                     </div>
                                     <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                         <input class="mdl-textfield__input" type="password" id="passwd" name="passwd">
-                                        <label class="mdl-textfield__label" for="passwd">Password</label>
+                                        <label class="mdl-textfield__label" for="passwd">Парола</label>
                                     </div>
                                 </div>
                                 <div class="mdl-card__actions">
@@ -72,28 +74,29 @@
                         <form action="/register" method="post">
                             <div class="r mdl-card mdl-shadow--2dp">
                                 <div class="mdl-card__title">
-                                    <h2 class="mdl-card__title-text">Update</h2>
+                                    <h2 class="mdl-card__title-text">Регистрация</h2>
                                 </div>
                                 <div class="mdl-card__supporting-text">
                                     <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                         <input class="mdl-textfield__input" type="text" id="sample3">
-                                        <label class="mdl-textfield__label" for="sample3">fist name</label>
+                                        <label class="mdl-textfield__label" for="sample3">Име</label>
                                     </div>
                                     <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                         <input class="mdl-textfield__input" type="text" id="sample3">
-                                        <label class="mdl-textfield__label" for="sample3">last name</label>
+                                        <label class="mdl-textfield__label" for="sample3">Фамилия</label>
                                     </div>
                                     <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                         <input class="mdl-textfield__input" type="text" id="sample3">
-                                        <label class="mdl-textfield__label" for="sample3">password</label>
+                                        <label class="mdl-textfield__label" for="sample3">Имейл</label>
                                     </div>
-                                    <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                        <input class="mdl-textfield__input" type="text" id="sample3">
-                                        <label class="mdl-textfield__label" for="sample3">comfirm password</label>
+                                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                        <input class="mdl-textfield__input" type="password" name="passwd" id="passwd" oninput="$('#conf_passwd').attr('pattern', $('#passwd').val())">
+                                        <label class="mdl-textfield__label" for="passwd">Парола</label>
                                     </div>
-                                    <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                        <input class="mdl-textfield__input" type="text" id="sample3">
-                                        <label class="mdl-textfield__label" for="sample3">email</label>
+                                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                        <input class="mdl-textfield__input" type="password" id="conf_passwd">
+                                        <label class="mdl-textfield__label" for="conf_passwd">Повторете паролата</label>
+                                        <span class="mdl-textfield__error">Паролите не съвпадат</span>
                                     </div>
                                 </div>
                                 <div class="mdl-card__actions mdl-card--border">
@@ -107,6 +110,10 @@
                 </div>
             </div>
         </section>
+        <div id="error-message" class="mdl-js-snackbar mdl-snackbar">
+            <div class="mdl-snackbar__text"></div>
+            <button class="mdl-snackbar__action" type="button"></button>
+        </div> 
     </main>
     </div>
   </body>

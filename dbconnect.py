@@ -5,7 +5,7 @@ def connect():
     conn = MySQLdb.connect(
         db="sconnect",
         user="root",
-        passwd="kris12:)",
+        passwd="123456",
         host="localhost"
     )
 

@@ -127,7 +127,7 @@ def home():
     
     profile_pic = "/static/img/profile_pics/{}.png".format(session['id'])
 
-    return render_template('home.html', profile_pic=profile_pic)
+    return render_template('home1.html', profile_pic=profile_pic)
 
 @app.route('/settings', methods=["GET", "POST"])
 @no_cache
