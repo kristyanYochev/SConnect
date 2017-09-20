@@ -121,7 +121,7 @@ def register():
 @no_cache
 def home():
 
-    return render_template('home1.html',)
+    return render_template('home1.html')
 
 @app.route('/settings', methods=["GET", "POST"])
 @no_cache
