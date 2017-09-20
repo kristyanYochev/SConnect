@@ -38,7 +38,7 @@ def login_req(f):
             return f(*a, **kw)
         else:
             return redirect('/login')
-    
+
     return wrap
 
 def no_cache(f):
@@ -73,17 +73,17 @@ def login():
         real_passwd = ""
         if not int(x):
             return jsonify(error="E-mail не е регистриран", code="2")
-        
+
         fetched_info = DotMap(dict_c.fetchone())
 
         if not sha256.verify(passwd, fetched_info.passwd):
             return jsonify(error="Паролата не е вярна", code="3")
-        
+
         session['logged_in'] = True
         session['id'] = fetched_info.id
-        
+
         gc.collect()
-        
+
         return jsonify(code = "1", url = "/home")
 
 @app.route('/register', methods=["GET", "POST"])
@@ -95,7 +95,8 @@ def register():
         f_name = escape_string(request.form['f_name'])
         l_name = escape_string(request.form['l_name'])
         passwd = sha256.encrypt(request.form['passwd'])
-        
+        school = escape_string(request.form['school'])
+
         # captcha_response = request.form['g-recaptcha-response']
         # if not checkRecaptcha(captcha_response, SECRET_KEY):
         #     return jsonify(error="Google recaptcha смята, че сте робот.", code="3")
@@ -103,8 +104,8 @@ def register():
         x = c.execute('select * from users where email = "%s";' % email)
         if int(x):
             return jsonify(error="Email е зает!", code="2")
-        
-        c.execute('insert into users (email, f_name, l_name, passwd) values ("%s", "%s", "%s", "%s");' % (email, f_name, l_name, passwd))
+
+        c.execute('insert into users (email, f_name, l_name, passwd, school) values ("%s", "%s", "%s", "%s", "%s");' % (email, f_name, l_name, passwd, school))
         conn.commit()
 
         gc.collect()
@@ -119,15 +120,8 @@ def register():
 @app.route('/home')
 @no_cache
 def home():
-    # TODO: Add interest selection algorithm
-    # dict_c.execute('select interests from users where id = {};'.format(session['id']))
-    # res = DotMap(dict_c.fetchone())
-    # if res.interests == None:
-    #     return render_template('home.html', interests=[])
-    
-    profile_pic = "/static/img/profile_pics/{}.png".format(session['id'])
 
-    return render_template('home1.html', profile_pic=profile_pic)
+    return render_template('home1.html',)
 
 @app.route('/settings', methods=["GET", "POST"])
 @no_cache
@@ -151,10 +145,10 @@ def settings():
                     os.remove("{0}/{1}.png".format(UPLOAD_FOLDER, session['id']))
                 f.save("{0}/{1}.png".format(UPLOAD_FOLDER, session['id']))
                 print("file save")
-        
+
         interests = list(dict(request.form).keys())
         print(interests)
-        
+
         c.execute('update users set interests = "{0}" where id = {1};'.format(escape_string(json.dumps(interests)), session['id']))
         conn.commit()
 
@@ -182,13 +176,13 @@ def find_friends():
     for interest in interests:
         dict_c.execute('select * from interests where id = {}'.format(interest))
         res = DotMap(interest = DotMap(dict_c.fetchone()))
-        
+
         dict_c.execute('select f_name, l_name, id from users where cast(interests as char) like "%{0}%" and id != {1};'.format(res.interest.id, session['id']))
         res.users = dict_l_to_dotmap(dict_c.fetchall())
 
         print(res)
         interest_objs.append(res)
-    
+
     return render_template('find_friends.html', interest_objs=interest_objs)
 
 @app.route('/send-friend-request/<int:uid>')
@@ -208,7 +202,7 @@ def notify():
     notif_ids = [el[0] for el in c.fetchall()]
     if len(notif_ids) == 0:
         return render_template('notifications.html', notifications=[])
-    
+
     notifications = []
 
     for notif in notif_ids:
