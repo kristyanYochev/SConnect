@@ -118,7 +118,7 @@ def register():
 
         copyfile('{}/default.png'.format(UPLOAD_FOLDER), '{0}/{1}.png'.format(UPLOAD_FOLDER, id))
 
-        return jsonify(code="1", url="/login")
+        return jsonify(code="1", url="/")
 
 @app.route('/home')
 @no_cache
@@ -254,9 +254,21 @@ def friends():
 
     return render_template('friends.html', friends=friends)
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/')
+
 @app.route('/chat/<int:uid>')
+@no_cache
 def chat(uid):
-    pass
+    c.execute('select chat_room from friendships where (person_1 = {0} or person_1 = {1}) and (person_2 = {0} or person_2 = {1});'.format(uid, session['id']))
+    session['chat_room'] = c.fetchone()[0]
+    return render_template('chat.html')
+
+@io.on('message')
+def message(msg):
+    print(msg)
 
 if __name__ == "__main__":
     app.run(debug=True, port=9000, host="0.0.0.0")
