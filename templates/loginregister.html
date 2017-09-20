@@ -6,8 +6,8 @@
 
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.green-yellow.min.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
- 
-    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script> 
+
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="/static/js/form_submitter.js"></script>
 
@@ -19,10 +19,14 @@
       .mdl-card{
           border-radius: 7px;
       }
+      .text{
+        font-size: 15px;
+        color: #aaa;
+      }
     </style>
 
   </head>
-  <body>    
+  <body>
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
     <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
@@ -76,7 +80,7 @@
                 <div class="mdl-grid">
                     <div class="mdl-cell mdl-cell--4-col"></div>
                     <div class="mdl-cell mdl-cell--4-col">
-                    
+
                         <form action="/register" method="post">
                             <div class="r mdl-card mdl-shadow--2dp">
                                 <div class="mdl-card__title">
@@ -96,21 +100,22 @@
                                         <label class="mdl-textfield__label" for="email">Имейл</label>
                                         <span class="mdl-textfield__error" for="email">Имейла не е валиден</span>
                                     </div>
-                                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                         <input class="mdl-textfield__input" type="password" name="passwd" id="passwd" oninput="$('#conf_passwd').attr('pattern', $('#passwd').val())">
                                         <label class="mdl-textfield__label" for="passwd">Парола</label>
                                     </div>
+                                    <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                        <input class="mdl-textfield__input" type="password" id="conf_passwd">
+                                        <label class="mdl-textfield__label" for="conf_passwd">Повторете паролата</label>
+                                        <span class="mdl-textfield__error">Паролите не съвпадат</span>
+                                    </div>
+                                    <div class="text" style="margin-bottom: 5px;">В кое училище учите?</div>
                                     <select name="school">
                                       <option value="elsys">ТУЕС</option>
                                       <option value="ja">СПГЕ "Джон Атанасов"</option>
                                       <option value="smg">СМГ</option>
                                       <option value="npmg">НПМГ</option>
                                     </select>
-                                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                        <input class="mdl-textfield__input" type="password" id="conf_passwd">
-                                        <label class="mdl-textfield__label" for="conf_passwd">Повторете паролата</label>
-                                        <span class="mdl-textfield__error">Паролите не съвпадат</span>
-                                    </div>
                                 </div>
                                 <div class="mdl-card__actions mdl-card--border">
                                     <input type="submit" value="Регистрирай се" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
@@ -126,7 +131,7 @@
         <div id="error-message" class="mdl-js-snackbar mdl-snackbar">
             <div class="mdl-snackbar__text"></div>
             <button class="mdl-snackbar__action" type="button"></button>
-        </div> 
+        </div>
     </main>
     </div>
   </body>
