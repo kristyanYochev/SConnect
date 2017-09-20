@@ -242,7 +242,7 @@ def accept(uid):
     conn.commit()
     c.execute('select chat_room from friendships where person_1 = {0} and person_2 = {1};'.format(uid, session['id']))
     chat_room = c.fetchone()[0]
-    c.execute('create table chat_{} (msg varchar(1000), sender int, date_sent datetime);'.format(chat_room))
+    c.execute('create table chat_{} (msg varchar(1000), sender varchar(100), date_sent datetime);'.format(chat_room))
     conn.commit()
     return redirect('/home')
 
@@ -278,6 +278,7 @@ def chat(uid):
 def message(msg):
     ret = "{0}: {1}".format(session['name'], msg)
     join_room(session['chat_room'])
+    c.execute('insert into chat_{0} (msg, sender, date_sent) values ("{1}", "{2}", "{3}")'.format(session['chat_room'], msg, session['name'], datetime.now()))
     send(ret, room=session['chat_room'], broadcast=True)
 
 if __name__ == "__main__":
