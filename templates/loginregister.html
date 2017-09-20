@@ -84,16 +84,17 @@
                                 </div>
                                 <div class="mdl-card__supporting-text">
                                     <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                        <input class="mdl-textfield__input" type="text" id="sample3">
-                                        <label class="mdl-textfield__label" for="sample3">Име</label>
+                                        <input class="mdl-textfield__input" type="text" id="f_name" name="f_name">
+                                        <label class="mdl-textfield__label" for="f_name">Име</label>
                                     </div>
                                     <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                        <input class="mdl-textfield__input" type="text" id="sample3">
-                                        <label class="mdl-textfield__label" for="sample3">Фамилия</label>
+                                        <input class="mdl-textfield__input" type="text" id="l_name" name="l_name">
+                                        <label class="mdl-textfield__label" for="l_name">Фамилия</label>
                                     </div>
                                     <div class="r mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                        <input class="mdl-textfield__input" type="text" id="sample3">
-                                        <label class="mdl-textfield__label" for="sample3">Имейл</label>
+                                        <input class="mdl-textfield__input" type="email" id="email" name="email">
+                                        <label class="mdl-textfield__label" for="email">Имейл</label>
+                                        <span class="mdl-textfield__error" for="email">Имейла не е валиден</span>
                                     </div>
                                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                         <input class="mdl-textfield__input" type="password" name="passwd" id="passwd" oninput="$('#conf_passwd').attr('pattern', $('#passwd').val())">
@@ -103,7 +104,7 @@
                                       <option value="elsys">ТУЕС</option>
                                       <option value="ja">СПГЕ "Джон Атанасов"</option>
                                       <option value="smg">СМГ</option>
-                                      <option value="npmg">НПМГ</option> 
+                                      <option value="npmg">НПМГ</option>
                                     </select>
                                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                         <input class="mdl-textfield__input" type="password" id="conf_passwd">
