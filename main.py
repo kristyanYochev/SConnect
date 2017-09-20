@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 
 from flask import Flask, render_template, session, request, jsonify, redirect, make_response
-# from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send
 from dbconnect import connect
 from MySQLdb import escape_string as es
 from passlib.hash import sha256_crypt as sha256
@@ -22,6 +22,8 @@ app = Flask(__name__)
 app.secret_key = "uhisfadvhgkjlfdsljhgblkjhgibdafslkjhgbdsfvhkbljdsfvkjhbdfsvkjhbdfscjhknl"
 
 UPLOAD_FOLDER = "{}/static/img/profile_pics".format(os.path.dirname(os.path.realpath(__file__))) # "~/Desktop/proj/SConnect/static/img/profile_pics"
+
+io = SocketIO(app)
 
 def escape_string(string):
     return es(string).decode('utf-8')
@@ -250,6 +252,10 @@ def friends():
         friends.append(res)
 
     return render_template('friends.html', friends=friends)
+
+@app.route('/chat/<int:uid>')
+def chat(uid):
+    pass
 
 if __name__ == "__main__":
     app.run(debug=True, port=9000, host="0.0.0.0")
