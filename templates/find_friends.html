@@ -32,38 +32,99 @@
             </header>
             <main class="mdl-layout__content">
                 <section class="mdl-layout__tab-panel is-active" id="sect-{{ interest_objs[0].interest.id }}">
-                    <ul class="mdl-list">
-                        {% for user in interest_objs[0].users %}
-                            <li class="mdl-list__item">
-                                <span class="mdl-list__item-primary-content">
-                                    <img width="75" style="border-radius: 100%;" src="/static/img/profile_pics/{{ user.id }}.png">
-                                    <h5 class="mdl-list__item-secondary-action">{{ user.f_name }} {{ user.l_name }}</h5>
-                                </span>
-                                <span class="mdl-list__item-secondary-content">
-                                    <a href="/send-friend-request/{{ user.id }}" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Добави приятел</a>
-                                </span>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--4-col"></div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <div class="r mdl-card mdl-shadow--2-dp">
+                                <div class="mdl-card__title">
+                                    <h2 class="mdl-card__title-text">Намери приятели</h2>
+                                </div>
+                                <div class="mdl-card__supporting-text">
+                                    <ul class="mdl-list">
+                                        {% for user in interest_objs[0].users %}
+                                            <li class="mdl-list__item">
+                                                <span class="mdl-list__item-primary-content">
+                                                    <img width="75" style="border-radius: 100%;" src="/static/img/profile_pics/{{ user.id }}.png">
+                                                    <h5 class="mdl-list__item-secondary-action">{{ user.f_name }} {{ user.l_name }}</h5>
+                                                </span>
+                                                <span class="mdl-list__item-secondary-content">
+                                                    <a href="/send-friend-request/{{ user.id }}" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Добави приятел</a>
+                                                </span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
                 {% for interest in interest_objs[1:] %}
-                    <section class="mdl-layout__tab-panel {% if interest_objs.index(interest) == 0 %} is-active {% endif %}" id="sect-{{ interest.interest.id }}">
-                        <ul class="mdl-list">
-                            {% for user in interest.users %}
-                                <li class="mdl-list__item">
-                                    <span class="mdl-list__item-primary-content">
-                                        <img width=75 src="/static/img/profile_pics/{{ user.id }}.png">
-                                        <h5 class="mdl-list__item-secondary-action">{{ user.f_name }} {{ user.l_name }}</h5>
-                                    </span>
-                                    <span class="mdl-list__item-secondary-content">
-                                        <a href="/send-friend-request/{{ user.id }}" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Добави приятел</a>
-                                    </span>
-                                </li>
-                            {% endfor %}
-                        </ul>
+                    <section class="mdl-layout__tab-panel" id="sect-{{ interest.interest.id }}">
+                        <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--4-col"></div>
+                        <div class="mdl-cell mdl-cell--4-col">
+                            <div class="r mdl-card mdl-shadow--2-dp">
+                                <div class="mdl-card__title">
+                                    <h2 class="mdl-card__title-text">Намери приятели</h2>
+                                </div>
+                                <div class="mdl-card__supporting-text">
+                                    <ul class="mdl-list">
+                                        {% for user in interest.users %}
+                                            <li class="mdl-list__item">
+                                                <span class="mdl-list__item-primary-content">
+                                                    <img width="75" style="border-radius: 100%;" src="/static/img/profile_pics/{{ user.id }}.png">
+                                                    <h5 class="mdl-list__item-secondary-action">{{ user.f_name }} {{ user.l_name }}</h5>
+                                                </span>
+                                                <span class="mdl-list__item-secondary-content">
+                                                    <a href="/send-friend-request/{{ user.id }}" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Добави приятел</a>
+                                                </span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     </section>
                 {% endfor %}
             </main>
         </div>
     </body>
 </html>
+<div class="mdl-grid">
+              <div class="mdl-cell mdl-cell--4-col"></div>
+              <div class="mdl-cell mdl-cell--4-col">
+
+                <div class="r mdl-card mdl-shadow--2dp">
+                  <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">Update</h2>
+                  </div>
+                  <div class="mdl-card__supporting-text">
+
+                    <ul class="demo-list-two mdl-list">
+                      <li class="mdl-list__item mdl-list__item--two-line">
+                        <span class="mdl-list__item-primary-content">
+                          <i class="material-icons mdl-list__item-avatar">person</i>
+                          <span>Кристиан Йочев</span>
+                          <span class="mdl-list__item-sub-title">69 приятели</span>
+                        </span>
+                        <span class="mdl-list__item-secondary-content">
+                          <button class="mdl-button mdl-js-button mdl-button--primary">
+                            Покани
+                          </button>
+                        </span>
+                      </li>
+                    </ul>
+
+
+                  </div>
+                  <div class="mdl-card__actions mdl-card--border">
+                    <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                    View Updates
+                    </a>
+                  </div>
+                </div>
+
+              </div>
+              <div class="mdl-cell mdl-cell--4-col"></div>
+            </div>

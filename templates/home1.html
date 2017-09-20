@@ -85,23 +85,41 @@
             <div class="mdl-grid">
               <div class="mdl-cell mdl-cell--4-col"></div>
               <div class="mdl-cell mdl-cell--4-col">
-
-                <div class="r mdl-card mdl-shadow--2dp">
-                  <div class="mdl-card__title">
-                    <h2 class="mdl-card__title-text">Интереси</h2>
-                  </div>
-                  <div class="mdl-card__supporting-text">
-                     <form action="/settings" method="POST">
-
-                     </form>
-                  </div>
-                  <div class="mdl-card__actions mdl-card--border">
-                    <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-                    View Updates
-                    </a>
-                  </div>
-                </div>
-
+                <form action="/settings" method="post" enctype="multipart/form-data">
+                    <div class="mdl-card mdl-shadow--8dp">
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">Settings</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            {% for interest in interests %}
+                                <label for="{{ interest.id }}" class="mdl-checkbox mdl-js-checkbox">
+                                    <input type="checkbox" id="{{ interest.id }}" name="{{ interest.id }}" class="mdl-checkbox__input" {% if str(interest.id) in user_interests %} checked {% endif %}>
+                                    <span class="mdl-checkbox__label">{{ interest.name }}</span>
+                                </label>
+                            {% endfor %}
+                            <input type="file" accept="image/png image/jpg image/jpeg image/bmp" name="profile_pic">
+                        </div>
+                        <div class="mdl-card__actions">
+                            <input type="submit" value="Запази промените" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                        </div>
+                    </div>
+                </form>
+                <form action='/add-interest' method="post">
+                    <div class="mdl-card mdl-shadow--8dp">
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">Добави интерес</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input class="mdl-textfield__input" type="text" id="name" name="name">
+                                <label class="mdl-textfield__label" for="name">Име на интереса</label>
+                            </div>
+                        </div>
+                        <div class="mdl-card__actions">
+                            <input type="submit" value="Добави интерес" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">                                
+                        </div>
+                    </div>
+                </form>
               </div>
               <div class="mdl-cell mdl-cell--4-col"></div>
             </div>
