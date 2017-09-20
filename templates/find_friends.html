@@ -25,6 +25,10 @@
             font-size: 15px;
             color: #aaa;
         }
+        .margin{
+            margin-left: 5px;
+            margin-right: 5px;
+        }
         </style>
 
     </head>
@@ -35,7 +39,8 @@
                     <span class="mdl-layout-title">School Connect</span>
                     <div class="mdl-layout-spacer"></div>
                     <nav class="mdl-navigation mdl-layout--large-screen-only">
-                        <a class="mdl-navigation__link" href="">Link</a>
+                        <a class="mdl-navigation__link" href="/home">Към начало</a>
+                        <a class="mdl-navigation__link" href="/logout">Изход</a>
                     </nav>
                 </div>
                 <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
@@ -60,7 +65,7 @@
                                             <li class="mdl-list__item">
                                                 <span class="mdl-list__item-primary-content">
                                                     <img width="75" style="border-radius: 100%;" src="/static/img/profile_pics/{{ user.id }}.png">
-                                                    <h5 class="mdl-list__item-secondary-action">{{ user.f_name }} {{ user.l_name }}</h5>
+                                                    <h5 class="margin mdl-list__item-secondary-action">{{ user.f_name }} {{ user.l_name }}</h5>
                                                 </span>
                                                 <span class="mdl-list__item-secondary-content">
                                                     <a href="/send-friend-request/{{ user.id }}" class="mdl-button--right mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Добави приятел</a>
