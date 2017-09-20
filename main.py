@@ -189,6 +189,7 @@ def add_interest():
     return redirect('/home')
 
 @app.route('/find-friends')
+@no_cache
 def find_friends():
     c.execute('select interests from users where id = {};'.format(session['id']))
     interests = json.loads(c.fetchone()[0])
